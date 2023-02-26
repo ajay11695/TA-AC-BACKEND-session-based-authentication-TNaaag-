@@ -2,11 +2,14 @@ var express = require('express');
 var router = express.Router();
 var User = require('../model/User')
 var articles=require('../model/article')
+var User=require('../model/User')
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
   console.log(req.session)
-  res.render('user');
+  User.findById({ _id: req.session.userId }, (err, user) => {
+  res.render('user',{user});
+  })
 });
 
 // registration
@@ -87,7 +90,7 @@ router.get('/dashboard', (req, res, next) => {
 router.get('/logout', (req, res, next) => {
   // res.clearCookie('connect.sid')
   req.session.destroy()
-  res.redirect('/users/login')
+  res.redirect('/')
 })
 
 module.exports = router;

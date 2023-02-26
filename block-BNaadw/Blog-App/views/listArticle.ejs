@@ -14,13 +14,19 @@
     <header>
         <div class="flex header">
             <a href="/"><h1>Home</h1></a>
-            <a class="btn" href="/articles/new">Add Article</a>
+            <% if(user){ %>
+              <div>
+                <a class="margin-l-20" href="">Welcome To <%= user.name %></a>
+                
+                <a class="btn" href="/users/logout">Log out</a>
+                <a class="btn" href="/articles/new">Add Article</a>
+              </div>
+            <% } %>
         </div>
     </header>
     <div class="container ">
 
         <h1 class="textalign">All Articles</h1>
-
         <% if(articles.length) { %>
 
             <% articles.forEach(article=>{ %>

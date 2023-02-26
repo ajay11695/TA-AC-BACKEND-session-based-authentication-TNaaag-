@@ -6,10 +6,21 @@ var User = require('../model/User')
 
 /* GET article listing. */
 router.get('/', (req, res, next) => {
-  articles.find({}, req.body, (err, articles) => {
-    if (err) return next()
-    res.render('listArticle.ejs', { articles: articles })
-  })
+  console.log(req.session.userId)
+  if (req.session.userId == undefined) {
+    articles.find({}, req.body, (err, articles) => {
+      if (err) return next(err)
+      return res.render('listArticle.ejs', { articles: articles, user: undefined })
+    })
+  } else {
+    articles.find({}, req.body, (err, articles) => {
+      if (err) return next(err)
+      User.findById({ _id: req.session.userId }, (err, user) => {
+        if (err) return next(err)
+        res.render('listArticle.ejs', { articles, user })
+      })
+    })
+  }
 })
 
 // created article form
@@ -44,9 +55,18 @@ router.post('/', (req, res, next) => {
 
 router.get('/:id', (req, res, next) => {
   var id = req.params.id
-  articles.findById(id).populate('comments').exec((err, articleDetail) => {
-    res.render('articleDetail', { articleDetail: articleDetail })
-  })
+  if(req.session.userId == undefined){
+    articles.findById(id).populate('comments').exec((err, articleDetail) => {
+     return  res.render('articleDetail', { articleDetail: articleDetail ,user:undefined})
+    })
+  }else{
+    articles.findById(id).populate('comments').exec((err, articleDetail) => {
+      User.findById({ _id: req.session.userId }, (err, user) => {
+        if (err) return next(err)
+        res.render('articleDetail', { articleDetail: articleDetail ,user:user})
+      })
+    })
+  }
 })
 
 // edit article
